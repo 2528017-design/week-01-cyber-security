@@ -1,0 +1,415 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ASSETS 100
+
+struct Asset
+{
+    char assetID[20];
+    char assetName[50];
+    char assetType[20];
+    char ipAddress[20];
+    char operatingSystem[50];
+    char department[50];
+    char riskLevel[20];
+    char securityStatus[20];
+};
+
+struct Asset assets[MAX_ASSETS];
+int assetCount = 0;
+
+
+/* Check Asset Type */
+int validAssetType(char type[])
+{
+    if (strcmp(type, "Workstation") == 0 ||
+        strcmp(type, "Server") == 0 ||
+        strcmp(type, "Router") == 0 ||
+        strcmp(type, "Switch") == 0 ||
+        strcmp(type, "Application") == 0)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+
+/* Check Risk Level */
+int validRiskLevel(char risk[])
+{
+    if (strcmp(risk, "Low") == 0 ||
+        strcmp(risk, "Medium") == 0 ||
+        strcmp(risk, "High") == 0 ||
+        strcmp(risk, "Critical") == 0)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+
+/* Check Security Status */
+int validSecurityStatus(char status[])
+{
+    if (strcmp(status, "Secure") == 0 ||
+        strcmp(status, "Warning") == 0 ||
+        strcmp(status, "Vulnerable") == 0)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+
+/* Find Asset using Asset ID */
+int findAsset(char id[])
+{
+    int i;
+
+    for (i = 0; i < assetCount; i++)
+    {
+        if (strcmp(assets[i].assetID, id) == 0)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+
+/* Add Asset */
+void addAsset()
+{
+    if (assetCount >= MAX_ASSETS)
+    {
+        printf("\nAsset storage is full!\n");
+        return;
+    }
+
+    printf("\n========== ADD ASSET ==========\n");
+
+    printf("Asset ID: ");
+    scanf(" %[^\n]", assets[assetCount].assetID);
+
+    if (findAsset(assets[assetCount].assetID) != -1)
+    {
+        printf("Asset ID already exists!\n");
+        return;
+    }
+
+    printf("Asset Name: ");
+    scanf(" %[^\n]", assets[assetCount].assetName);
+
+    do
+    {
+        printf("Asset Type (Workstation/Server/Router/Switch/Application): ");
+        scanf(" %[^\n]", assets[assetCount].assetType);
+
+        if (!validAssetType(assets[assetCount].assetType))
+        {
+            printf("Invalid Asset Type!\n");
+        }
+
+    } while (!validAssetType(assets[assetCount].assetType));
+
+
+    printf("IP Address: ");
+    scanf(" %[^\n]", assets[assetCount].ipAddress);
+
+    printf("Operating System: ");
+    scanf(" %[^\n]", assets[assetCount].operatingSystem);
+
+    printf("Department: ");
+    scanf(" %[^\n]", assets[assetCount].department);
+
+
+    do
+    {
+        printf("Risk Level (Low/Medium/High/Critical): ");
+        scanf(" %[^\n]", assets[assetCount].riskLevel);
+
+        if (!validRiskLevel(assets[assetCount].riskLevel))
+        {
+            printf("Invalid Risk Level!\n");
+        }
+
+    } while (!validRiskLevel(assets[assetCount].riskLevel));
+
+
+    do
+    {
+        printf("Security Status (Secure/Warning/Vulnerable): ");
+        scanf(" %[^\n]", assets[assetCount].securityStatus);
+
+        if (!validSecurityStatus(assets[assetCount].securityStatus))
+        {
+            printf("Invalid Security Status!\n");
+        }
+
+    } while (!validSecurityStatus(assets[assetCount].securityStatus));
+
+
+    assetCount++;
+
+    printf("\nAsset added successfully!\n");
+}
+
+
+/* Display One Asset */
+void displayAsset(int i)
+{
+    printf("\n-----------------------------------------\n");
+    printf("Asset ID       : %s\n", assets[i].assetID);
+    printf("Asset Name     : %s\n", assets[i].assetName);
+    printf("Asset Type     : %s\n", assets[i].assetType);
+    printf("IP Address     : %s\n", assets[i].ipAddress);
+    printf("OS             : %s\n", assets[i].operatingSystem);
+    printf("Department     : %s\n", assets[i].department);
+    printf("Risk Level     : %s\n", assets[i].riskLevel);
+    printf("Status         : %s\n", assets[i].securityStatus);
+    printf("-----------------------------------------\n");
+}
+
+
+/* Display All Assets */
+void displayAssets()
+{
+    int i;
+
+    int critical = 0;
+    int high = 0;
+    int medium = 0;
+    int vulnerable = 0;
+
+    if (assetCount == 0)
+    {
+        printf("\nNo assets available.\n");
+        return;
+    }
+
+    printf("\n=========================================\n");
+    printf("      CYBERSECURITY ASSET INVENTORY\n");
+    printf("=========================================\n");
+
+    for (i = 0; i < assetCount; i++)
+    {
+        displayAsset(i);
+
+        if (strcmp(assets[i].riskLevel, "Critical") == 0)
+            critical++;
+
+        if (strcmp(assets[i].riskLevel, "High") == 0)
+            high++;
+
+        if (strcmp(assets[i].riskLevel, "Medium") == 0)
+            medium++;
+
+        if (strcmp(assets[i].securityStatus, "Vulnerable") == 0)
+            vulnerable++;
+    }
+
+    printf("\n=========================================\n");
+    printf("Total Assets      : %d\n", assetCount);
+    printf("Critical Assets   : %d\n", critical);
+    printf("High Risk Assets  : %d\n", high);
+    printf("Medium Risk Assets: %d\n", medium);
+    printf("Vulnerable Assets : %d\n", vulnerable);
+    printf("=========================================\n");
+}
+
+
+/* Search Asset */
+void searchAsset()
+{
+    char id[20];
+    int index;
+
+    printf("\n========== SEARCH ASSET ==========\n");
+
+    printf("Enter Asset ID: ");
+    scanf(" %[^\n]", id);
+
+    index = findAsset(id);
+
+    if (index == -1)
+    {
+        printf("\nAsset not found!\n");
+    }
+    else
+    {
+        printf("\nAsset found!\n");
+        displayAsset(index);
+    }
+}
+
+
+/* Update Asset */
+void updateAsset()
+{
+    char id[20];
+    int index;
+
+    printf("\n========== UPDATE ASSET ==========\n");
+
+    printf("Enter Asset ID to update: ");
+    scanf(" %[^\n]", id);
+
+    index = findAsset(id);
+
+    if (index == -1)
+    {
+        printf("\nAsset not found!\n");
+        return;
+    }
+
+    printf("\nEnter new details:\n");
+
+    printf("Asset Name: ");
+    scanf(" %[^\n]", assets[index].assetName);
+
+
+    do
+    {
+        printf("Asset Type (Workstation/Server/Router/Switch/Application): ");
+        scanf(" %[^\n]", assets[index].assetType);
+
+        if (!validAssetType(assets[index].assetType))
+        {
+            printf("Invalid Asset Type!\n");
+        }
+
+    } while (!validAssetType(assets[index].assetType));
+
+
+    printf("IP Address: ");
+    scanf(" %[^\n]", assets[index].ipAddress);
+
+    printf("Operating System: ");
+    scanf(" %[^\n]", assets[index].operatingSystem);
+
+    printf("Department: ");
+    scanf(" %[^\n]", assets[index].department);
+
+
+    do
+    {
+        printf("Risk Level (Low/Medium/High/Critical): ");
+        scanf(" %[^\n]", assets[index].riskLevel);
+
+        if (!validRiskLevel(assets[index].riskLevel))
+        {
+            printf("Invalid Risk Level!\n");
+        }
+
+    } while (!validRiskLevel(assets[index].riskLevel));
+
+
+    do
+    {
+        printf("Security Status (Secure/Warning/Vulnerable): ");
+        scanf(" %[^\n]", assets[index].securityStatus);
+
+        if (!validSecurityStatus(assets[index].securityStatus))
+        {
+            printf("Invalid Security Status!\n");
+        }
+
+    } while (!validSecurityStatus(assets[index].securityStatus));
+
+
+    printf("\nAsset updated successfully!\n");
+}
+
+
+/* Delete Asset */
+void deleteAsset()
+{
+    char id[20];
+    int index;
+    int i;
+
+    printf("\n========== DELETE ASSET ==========\n");
+
+    printf("Enter Asset ID to delete: ");
+    scanf(" %[^\n]", id);
+
+    index = findAsset(id);
+
+    if (index == -1)
+    {
+        printf("\nAsset not found!\n");
+        return;
+    }
+
+    for (i = index; i < assetCount - 1; i++)
+    {
+        assets[i] = assets[i + 1];
+    }
+
+    assetCount--;
+
+    printf("\nAsset deleted successfully!\n");
+}
+
+
+/* Main Function */
+int main()
+{
+    int choice;
+
+    printf("\n=========================================\n");
+    printf("   CYBERSECURITY ASSET INVENTORY SYSTEM\n");
+    printf("=========================================\n");
+
+    do
+    {
+        printf("\n========== MAIN MENU ==========\n");
+        printf("1. Add Asset\n");
+        printf("2. Search Asset\n");
+        printf("3. Update Asset\n");
+        printf("4. Delete Asset\n");
+        printf("5. Display All Assets\n");
+        printf("6. Exit\n");
+        printf("===============================\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 1:
+                addAsset();
+                break;
+
+            case 2:
+                searchAsset();
+                break;
+
+            case 3:
+                updateAsset();
+                break;
+
+            case 4:
+                deleteAsset();
+                break;
+
+            case 5:
+                displayAssets();
+                break;
+
+            case 6:
+                printf("\nThank you for using the system!\n");
+                break;
+
+            default:
+                printf("\nInvalid choice! Please try again.\n");
+        }
+
+    } while (choice != 6);
+
+    return 0;
+}
